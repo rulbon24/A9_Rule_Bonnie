@@ -1,0 +1,108 @@
+---
+title: "A9_Rule_Bonnie"
+author: "Bonnie Rule"
+date: "2025-03-10"
+output: html_document
+---
+
+**Group members:** Bonnie Rule (20295738), Harnaaz Sandhu (20258736), Mackenzie Calhoun (20265644), Emma Mitchell (20296602)
+
+<https://github.com/rulbon24/A9_Rule_Bonnie.git>
+
+Loading packages and data:
+
+```{r}
+library(tidyverse)
+library(vegan)
+library(ggplot2)
+
+df <- read.csv("FloristicSurvey.csv")
+```
+
+Inspecting data structure:
+
+```{r}
+str(df)
+head(df)
+```
+
+Cleaning up the data:
+
+```{r}
+# Converting Location to factor:
+df$Location <- as.factor(df$Location)
+df$Population <- as.factor(df$Population)
+```
+
+```{r}
+# Selecting only plant species (columns after garlic mustard data):
+plant_data <- df %>% select(-(Quadrate:Sillique))
+```
+
+*Question 1: What effect (if any) does garlic mustard have on the plant community?*
+
+Species richness:
+```{r}
+df$richness <- rowSums(plant_data > 0)
+
+ggplot(df, aes(x = Location, y = richness, fill = Location)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Species Richness Inside vs. Outside Garlic Mustard Patches",
+       x = "Location",
+       y = "Number of Plant Species")
+```
+**Figure 1.** bla bla bla
+
+Ordination (NMDS for Community Composition):
+```{r}
+# Removing columns with zero sum (species not present in any quadrate):
+comm_matrix <- plant_data[, colSums(plant_data) > 0]
+
+# Ensuring row names match quadrates:
+rownames(comm_matrix) <- df$Quadrate
+
+# Running NMDS:
+nmds <- metaMDS(comm_matrix, k = 2, trymax = 100)
+
+# Extracting the scores:
+nmds_scores <- as.data.frame(scores(nmds)$sites)
+nmds_scores$Location <- df$Location
+
+# Plotting NMDS:
+ggplot(nmds_scores, aes(x = NMDS1, y = NMDS2, color = Location)) +
+  geom_point(size = 3) +
+  theme_minimal() +
+  labs(title = "NMDS of Plant Communities: Inside vs. Outside Garlic Mustard")
+```
+**Figure 2.** bla bla bla
+
+
+Statistical Test, PERMANOVA:
+```{r}
+adonis_result <- adonis2(comm_matrix ~ Location, data = df, method = "bray")
+adonis_result
+```
+
+**Interpretation/answer:**
+
+
+*Question 2: What has a stronger effect on plant communities: the presence/absence of garlic mustard (in/out) or sampling population?*
+
+Comparing species richness across populations:
+```{r}
+ggplot(df, aes(x = Population, y = richness, fill = Location)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Species Richness by Population and Garlic Mustard Presence",
+       x = "Population",
+       y = "Number of Plant Species")
+```
+**Figure 3.** bla bla bla
+
+PERMANOVA to Test Population vs. Location:
+```{r}
+adonis2(comm_matrix ~ Location + Population, data = df, method = "bray")
+```
+
+**Interpretation/answer:**

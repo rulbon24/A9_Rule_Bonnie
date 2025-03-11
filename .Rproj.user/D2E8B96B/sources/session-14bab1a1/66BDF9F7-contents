@@ -5,7 +5,7 @@ date: "2025-03-10"
 output: html_document
 ---
 
-**Group members:** Bonnie Rule (20295738), Harnaaz Sandhu (), Mackenzie Calhoun (), Emma \_ ()
+**Group members:** Bonnie Rule (20295738), Harnaaz Sandhu (20258736), Mackenzie Calhoun (20265644), Emma Mitchell (20296602)
 
 <https://github.com/rulbon24/A9_Rule_Bonnie.git>
 
@@ -52,7 +52,10 @@ ggplot(df, aes(x = Location, y = richness, fill = Location)) +
        x = "Location",
        y = "Number of Plant Species")
 ```
-**Figure 1.** bla bla bla
+
+**Figure 1.** Species Richness Inside vs. Outside Garlic Mustard Patches. Boxplots illustrate the distribution of plant species counts in quadrates located inside (i) versus outside (o) garlic mustard patches, showing medians, quartiles, and outliers.
+
+The boxplot of species richness inside vs. outside garlic mustard patches suggests only minor differences in the number of plant species.
 
 Ordination (NMDS for Community Composition):
 ```{r}
@@ -75,8 +78,10 @@ ggplot(nmds_scores, aes(x = NMDS1, y = NMDS2, color = Location)) +
   theme_minimal() +
   labs(title = "NMDS of Plant Communities: Inside vs. Outside Garlic Mustard")
 ```
-**Figure 2.** bla bla bla
 
+**Figure 2.** NMDS Ordination of Plant Communities by Location. Each point represents a quadrate, and points are colored by Location (inside vs. outside garlic mustard patches). The low stress value indicates an acceptable two-dimensional representation of community dissimilarities.
+
+The NMDS plot does not display clear separation between quadrates based on garlic mustard presence, indicating that community composition does not drastically differ between the two groups.
 
 Statistical Test, PERMANOVA:
 ```{r}
@@ -84,8 +89,7 @@ adonis_result <- adonis2(comm_matrix ~ Location, data = df, method = "bray")
 adonis_result
 ```
 
-**Interpretation/answer:**
-
+**Interpretation/answer:** The test adonis2(comm_matrix ~ Location, ...) returned an F-value of 0.9283 with a p-value of 0.486 and an R² of 0.03209. This result indicates that garlic mustard presence (Location) does not have a statistically significant effect on the overall plant community composition. There is little evidence to suggest that the presence of garlic mustard significantly alters either the species richness or the composition of the surrounding plant community.
 
 *Question 2: What has a stronger effect on plant communities: the presence/absence of garlic mustard (in/out) or sampling population?*
 
@@ -98,11 +102,24 @@ ggplot(df, aes(x = Population, y = richness, fill = Location)) +
        x = "Population",
        y = "Number of Plant Species")
 ```
-**Figure 3.** bla bla bla
+
+**Figure 3.** Species Richness by Population and Garlic Mustard Presence. Boxplots display plant species richness across different populations, with colors indicating whether quadrates are inside or outside garlic mustard patches. Variation among populations suggests that spatial factors may be influential.
+
+When species richness is compared across sampling populations (with Location as a fill variable), variation among populations is evident.
 
 PERMANOVA to Test Population vs. Location:
 ```{r}
 adonis2(comm_matrix ~ Location + Population, data = df, method = "bray")
 ```
 
-**Interpretation/answer:**
+**Interpretation/answer:** PERMANOVA Including Both Factors:
+The model adonis2(comm_matrix ~ Location + Population, ...) shows:
+Location: F = 1.6879, p = 0.101, R² = 0.03209 (non-significant)
+Population: F = 6.7286, p = 0.001, R² = 0.51166 ( significant)
+
+While the presence of garlic mustard (Location) continues to have a negligible effect, the sampling population accounts for a large proportion (over 51%) of the variation in plant community composition and is highly significant. This strongly suggests that spatial or site-specific factors are the primary drivers of community differences, rather than the influence of garlic mustard alone.
+
+**Conclusion:** 
+*Garlic Mustard Effect:* The analysis (via species richness, NMDS, and PERMANOVA) shows that garlic mustard does not have a significant impact on the surrounding plant community.
+
+*Population Effect:* Sampling population exerts a strong and significant influence on community composition, explaining a major portion of the variation. This indicates that local environmental conditions or other spatial factors are more important determinants of community structure than the presence of garlic mustard.
